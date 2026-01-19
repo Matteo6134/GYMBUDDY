@@ -67,7 +67,7 @@ export const TRANSLATIONS = {
             '🧱 Back',
             '🦵 Legs (Quads)',
             '🔻 V-Taper',
-            '🍫 Abs / Core'
+            '🍫 Abs'
         ],
         bigger_focus_q: "Where do you want to get BIGGER?",
         select_multiple: "Select multiple if needed.",
@@ -127,7 +127,8 @@ export const TRANSLATIONS = {
         keep_editing: "Keep Editing",
         add_exercise: "Add First Exercise",
         no_exercises: "No exercises.",
-        day_name_placeholder: "Day Name"
+        day_name_placeholder: "Day Name",
+        edit: "EDIT"
     },
     it: {
         // General
@@ -195,7 +196,7 @@ export const TRANSLATIONS = {
             '🧱 Schiena',
             '🦵 Gambe',
             '🔻 V-Taper',
-            '🍫 Addominali / Core'
+            '🍫 Addominali'
         ],
         bigger_focus_q: "Dove vuoi diventare più GROSSO?",
         select_multiple: "Seleziona più di uno se necessario.",
@@ -255,7 +256,8 @@ export const TRANSLATIONS = {
         keep_editing: "Continua a modificare",
         add_exercise: "Aggiungi Primo Esercizio",
         no_exercises: "Nessun esercizio.",
-        day_name_placeholder: "Nome Giorno"
+        day_name_placeholder: "Nome Giorno",
+        edit: "MODIFICA"
     },
     pl: {
         // General
@@ -323,7 +325,7 @@ export const TRANSLATIONS = {
             '🧱 Plecy',
             '🦵 Nogi',
             '🔻 V-Taper',
-            '🍫 Brzuch / Core'
+            '🍫 Brzuch'
         ],
         bigger_focus_q: "Gdzie chcesz urosnąć?",
         select_multiple: "Wybierz kilka, jeśli potrzebujesz.",
@@ -383,6 +385,7 @@ export const TRANSLATIONS = {
         keep_editing: "Edytuj dalej",
         add_exercise: "Dodaj Pierwsze Ćwiczenie",
         no_exercises: "Brak ćwiczeń.",
-        day_name_placeholder: "Nazwa Dnia"
+        day_name_placeholder: "Nazwa Dnia",
+        edit: "EDYTUJ"
     }
 };

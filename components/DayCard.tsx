@@ -47,8 +47,8 @@ export function DayCard({ daySchedule, isToday, isEditMode, onPressStart, onEdit
                 "Modify Workout",
                 `Edit ${daySchedule.day}'s workout?`,
                 [
-                    { text: "Cancel", style: "cancel" },
-                    { text: "Edit", onPress: onEdit }
+                    { text: t.cancel, style: "cancel" },
+                    { text: t.edit, onPress: onEdit }
                 ]
             );
         }
@@ -90,7 +90,7 @@ export function DayCard({ daySchedule, isToday, isEditMode, onPressStart, onEdit
                             style={styles.btnInner}
                             tintColor="rgba(0, 122, 255, 0.8)"
                         >
-                            <Text style={[styles.btnText, { color: '#fff' }]}>EDIT</Text>
+                            <Text style={[styles.btnText, { color: '#fff' }]}>{t.edit}</Text>
                         </GlassCard>
                     ) : isToday ? (
                         <GlassCard
@@ -134,12 +134,12 @@ export function DayCard({ daySchedule, isToday, isEditMode, onPressStart, onEdit
 
                     <Link.Menu>
                         <Link.MenuAction
-                            title="Edit Workout"
+                            title={t.edit}
                             icon="pencil"
                             onPress={onEdit}
                         />
                         <Link.MenuAction
-                            title="Cancel"
+                            title={t.cancel}
                             icon="xmark"
                             onPress={() => { }}
                             destructive
