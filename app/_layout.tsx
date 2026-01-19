@@ -46,6 +46,8 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { userProfile } = useGymStore();
@@ -69,25 +71,27 @@ function RootLayoutNav() {
       }, 100);
     } else if (userProfile && inOnboarding) {
       // If we have a profile but are in onboarding, go to tabs
-      router.replace('/index');
+      router.replace('/(tabs)' as any);
     }
   }, [userProfile, segments]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar style="light" />
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
-        <Stack.Screen name="active-mode" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="edit-workout"
-          options={{
-            headerShown: false,
-            presentation: 'card'
-          }}
-        />
-      </Stack>
-    </ThemeProvider>
+    <KeyboardProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <StatusBar style="light" />
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
+          <Stack.Screen name="active-mode" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="edit-workout"
+            options={{
+              headerShown: false,
+              presentation: 'card'
+            }}
+          />
+        </Stack>
+      </ThemeProvider>
+    </KeyboardProvider>
   );
 }

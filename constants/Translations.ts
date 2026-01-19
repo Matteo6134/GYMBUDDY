@@ -110,7 +110,24 @@ export const TRANSLATIONS = {
         // Timer
         rest_timer: "REST TIMER",
         skip: "SKIP",
-        add_15s: "+15s"
+        add_15s: "+15s",
+
+        // Edit Workout
+        save: "SAVE",
+        delete: "DELETE",
+        exercise_name: "EXERCISE NAME",
+        sets: "SETS",
+        reps: "REPS",
+        rest: "REST",
+        confirm_delete: "Confirm Delete",
+        delete_exercise_desc: "Remove this exercise?",
+        discard_changes: "Discard Changes?",
+        unsaved_changes_desc: "You have unsaved changes. Are you sure you want to go back?",
+        discard: "Discard",
+        keep_editing: "Keep Editing",
+        add_exercise: "Add First Exercise",
+        no_exercises: "No exercises.",
+        day_name_placeholder: "Day Name"
     },
     it: {
         // General
@@ -221,7 +238,24 @@ export const TRANSLATIONS = {
         // Timer
         rest_timer: "TIMER RIPOSO",
         skip: "SALTA",
-        add_15s: "+15s"
+        add_15s: "+15s",
+
+        // Edit Workout
+        save: "SALVA",
+        delete: "ELIMINA",
+        exercise_name: "NOME ESERCIZIO",
+        sets: "SERIE",
+        reps: "RIP.",
+        rest: "RECUPERO",
+        confirm_delete: "Conferma Eliminazione",
+        delete_exercise_desc: "Rimuovere questo esercizio?",
+        discard_changes: "Annullare le modifiche?",
+        unsaved_changes_desc: "Hai modifiche non salvate. Sei sicuro di voler tornare indietro?",
+        discard: "Annulla",
+        keep_editing: "Continua a modificare",
+        add_exercise: "Aggiungi Primo Esercizio",
+        no_exercises: "Nessun esercizio.",
+        day_name_placeholder: "Nome Giorno"
     },
     pl: {
         // General
@@ -332,6 +366,23 @@ export const TRANSLATIONS = {
         // Timer
         rest_timer: "CZAS ODPOCZYNKU",
         skip: "POMIŃ",
-        add_15s: "+15s"
+        add_15s: "+15s",
+
+        // Edit Workout
+        save: "ZAPISZ",
+        delete: "USUŃ",
+        exercise_name: "NAZWA ĆWICZENIA",
+        sets: "SERIE",
+        reps: "POWT.",
+        rest: "PRZERWA",
+        confirm_delete: "Potwierdź usunięcie",
+        delete_exercise_desc: "Czy na pewno chcesz usunąć to ćwiczenie?",
+        discard_changes: "Odrzucić zmiany?",
+        unsaved_changes_desc: "Masz niezapisane zmiany. Czy na pewno chcesz wyjść?",
+        discard: "Odrzuć",
+        keep_editing: "Edytuj dalej",
+        add_exercise: "Dodaj Pierwsze Ćwiczenie",
+        no_exercises: "Brak ćwiczeń.",
+        day_name_placeholder: "Nazwa Dnia"
     }
 };

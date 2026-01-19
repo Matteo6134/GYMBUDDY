@@ -3,23 +3,23 @@ import { ActivePlan, UserProfile } from "@/store/useGymStore";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function generateWorkoutPlan(profile: UserProfile, _apiKeyIgnored?: string, language: 'en' | 'it' | 'pl' = 'en'): Promise<ActivePlan> {
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-        model: "gemini-3-flash-preview", // Revert to stable model if preview acts up
-        generationConfig: {
-            responseMimeType: "application/json"
-        }
-    });
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({
+    model: "gemini-3-flash-preview",
+    generationConfig: {
+      responseMimeType: "application/json"
+    }
+  });
 
-    const age = new Date().getFullYear() - profile.birthYear;
+  const age = new Date().getFullYear() - profile.birthYear;
 
-    const langInstruction = language === 'it'
-        ? "IMPORTANT: Translate ALL content (Day Titles, Exercise Names, Tips) into ITALIAN."
-        : language === 'pl'
-            ? "IMPORTANT: Translate ALL content (Day Titles, Exercise Names, Tips) into POLISH."
-            : "Output in English.";
+  const langInstruction = language === 'it'
+    ? "IMPORTANT: Translate ALL content (Day Titles, Exercise Names, Tips) into ITALIAN."
+    : language === 'pl'
+      ? "IMPORTANT: Translate ALL content (Day Titles, Exercise Names, Tips) into POLISH."
+      : "Output in English.";
 
-    const prompt = `
+  const prompt = `
     You are an elite personal trainer and physiologist (PhD).
     Create the scientifically "Perfect Gym Schedule" (JSON) for:
 
@@ -65,19 +65,19 @@ export async function generateWorkoutPlan(profile: UserProfile, _apiKeyIgnored?:
     Generate excactly ${profile.days} workout days.
     `;
 
-    try {
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+  try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-        // JSON Mode guarantees pure JSON, but we'll trim just in case
-        const parsed: ActivePlan = JSON.parse(text.trim());
-        return parsed;
+    // JSON Mode guarantees pure JSON, but we'll trim just in case
+    const parsed: ActivePlan = JSON.parse(text.trim());
+    return parsed;
 
-    } catch (error) {
-        console.error("Gemini API Error:", error);
-        throw new Error("Failed to generate plan. Please checks your API Key and try again.");
-    }
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    throw new Error("Failed to generate plan. Please checks your API Key and try again.");
+  }
 }
 
 export const validateApiKey = (key: string) => key.startsWith('AIza');

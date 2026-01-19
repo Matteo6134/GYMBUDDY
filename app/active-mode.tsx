@@ -157,7 +157,10 @@ export default function ActiveModeScreen() {
                     tintColor={isWorkoutComplete ? "#fff" : "rgba(255,255,255,0.1)"}
                 >
                     <Text style={[styles.finishText, !isWorkoutComplete && styles.finishTextDisabled]}>
-                        {isWorkoutComplete ? t.finish_workout : `${exercises.length - Object.keys(workoutProgress || {}).filter(k => ((workoutProgress?.[k] || []).length === (exercises.find(e => e.id === k)?.sets || 0))).length} ${t.exercises_left}`}
+                        {isWorkoutComplete ? t.finish_workout : `${exercises.filter(ex => {
+                            const completed = (workoutProgress && workoutProgress[ex.id]) || [];
+                            return completed.length < ex.sets;
+                        }).length} ${t.exercises_left}`}
                     </Text>
                 </GlassCard>
             </Pressable>
@@ -255,13 +258,14 @@ const styles = StyleSheet.create({
     },
     setText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 4,
     },
     setReps: {
-        color: 'rgba(255,255,255,0.5)',
-        fontSize: 14,
+        color: '#FF9500',
+        fontSize: 26,
+        fontWeight: 'bold',
     },
     setTextDone: {
         color: '#fff', // Keep bright

@@ -126,7 +126,7 @@ export default function OnboardingScreen() {
             setUserProfile(profile);
             setActivePlan(plan);
 
-            router.replace('/(tabs)/index');
+            // router.replace('/(tabs)/index' as any); // Let _layout.tsx handle the redirect when userProfile is updated
         } catch (e: any) {
             console.error(e);
             Alert.alert(t.error, "Check API Key or Connection.");

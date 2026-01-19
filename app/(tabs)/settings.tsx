@@ -53,7 +53,7 @@ export default function SettingsScreen() {
                             setActivePlan(newPlan);
 
                             Alert.alert(t.success, (t as any).plan_updated_msg);
-                            router.replace("/index");
+                            router.replace("/(tabs)" as any);
                         } catch (e) {
                             Alert.alert(t.error, (t as any).regenerate_error_msg);
                         } finally {

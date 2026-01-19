@@ -1,12 +1,20 @@
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { Icon, Label, NativeTabs, VectorIcon } from 'expo-router/unstable-native-tabs';
-import { Platform } from 'react-native';
+import { DynamicColorIOS, Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
     <NativeTabs
-      blurEffect="systemChromeMaterialDark"
-      tintColor="#FFFFFF"
+      labelStyle={{
+        color: Platform.OS === 'ios' ? DynamicColorIOS({
+          dark: 'white',
+          light: 'black',
+        }) : undefined,
+      }}
+      tintColor={Platform.OS === 'ios' ? DynamicColorIOS({
+        dark: 'white',
+        light: 'black',
+      }) : '#FFFFFF'}
     >
       <NativeTabs.Trigger name="index">
         <Label>Workouts</Label>

@@ -7,7 +7,8 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Dimensions, Keyboard, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Dimensions, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -22,6 +23,7 @@ export default function EditWorkoutScreen() {
 
     const [daySchedule, setDaySchedule] = useState<DaySchedule | null>(null);
     const [exercises, setExercises] = useState<Exercise[]>([]);
+    const [dayNameInput, setDayNameInput] = useState("");
     const [currentIndex, setCurrentIndex] = useState(0);
     const carouselRef = useRef<ICarouselInstance>(null);
 
@@ -36,20 +38,48 @@ export default function EditWorkoutScreen() {
             if (schedule) {
                 setDaySchedule(schedule);
                 setExercises(JSON.parse(JSON.stringify(schedule.exercises)));
+                setDayNameInput(schedule.day);
             }
         }
     }, [activePlan, day]);
+
+    const hasUnsavedChanges = () => {
+        if (!daySchedule) return false;
+        const exercisesChanged = JSON.stringify(exercises) !== JSON.stringify(daySchedule.exercises);
+        const nameChanged = dayNameInput !== daySchedule.day;
+        return exercisesChanged || nameChanged;
+    };
+
+    const handleBack = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
+        if (hasUnsavedChanges()) {
+            Alert.alert(
+                t.discard_changes,
+                t.unsaved_changes_desc,
+                [
+                    { text: t.keep_editing, style: "cancel" },
+                    {
+                        text: t.discard,
+                        style: "destructive",
+                        onPress: () => router.back()
+                    }
+                ]
+            );
+        } else {
+            router.back();
+        }
+    };
 
     const handleSave = () => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         if (!daySchedule) return;
 
         if (exercises.length === 0) {
-            Alert.alert("Error", "You must have at least one exercise.");
+            Alert.alert(t.error, "You must have at least one exercise."); // TODO: Translate this Error msg if critical, keeping EN for now as per instructions strict set
             return;
         }
 
-        const newSchedule = { ...daySchedule, exercises };
+        const newSchedule = { ...daySchedule, exercises, day: dayNameInput };
         updateDaySchedule(daySchedule.day, newSchedule);
         router.back();
     };
@@ -69,10 +99,10 @@ export default function EditWorkoutScreen() {
 
         const exerciseToDelete = exercises[currentIndex];
 
-        Alert.alert("Confirm Delete", "Remove this exercise?", [
-            { text: "Cancel", style: "cancel" },
+        Alert.alert(t.confirm_delete, t.delete_exercise_desc, [
+            { text: t.cancel, style: "cancel" },
             {
-                text: "Delete", style: "destructive", onPress: () => {
+                text: t.delete, style: "destructive", onPress: () => {
                     const isLastItem = currentIndex === exercises.length - 1;
                     if (isLastItem && exercises.length > 1) {
                         carouselRef.current?.scrollTo({ index: currentIndex - 1, animated: true });
@@ -120,124 +150,131 @@ export default function EditWorkoutScreen() {
         <View style={styles.container}>
             <LinearGradient colors={['#000000', '#1c1c1e']} style={StyleSheet.absoluteFill} />
 
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={{ flex: 1 }}>
-                    <KeyboardAvoidingView
-                        style={{ flex: 1 }}
-                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    >
-                        {/* Header */}
-                        <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-                            <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft); router.back() }} style={styles.backBtn}>
-                                <FontAwesome name="arrow-left" size={24} color="#fff" />
-                            </Pressable>
-                            <Text style={styles.headerTitle}>Edit {daySchedule.day}</Text>
-                            <Pressable onPress={handleAddExercise} style={styles.addBtnHeader}>
-                                <FontAwesome name="plus" size={20} color="#fff" />
-                            </Pressable>
-                        </View>
-
-                        {/* Carousel */}
-                        <View style={styles.carouselContainer}>
-                            {exercises.length === 0 ? (
-                                <View style={styles.emptyContainer}>
-                                    <Text style={styles.emptyText}>No exercises.</Text>
-                                    <Pressable onPress={handleAddExercise} style={styles.addFirstBtn}>
-                                        <Text style={styles.addFirstText}>Add First Exercise</Text>
-                                    </Pressable>
-                                </View>
-                            ) : (
-                                <Carousel
-                                    ref={carouselRef}
-                                    loop={false}
-                                    width={PAGE_WIDTH}
-                                    height={PAGE_WIDTH * 1.3}
-                                    data={exercises}
-                                    scrollAnimationDuration={500}
-                                    onSnapToItem={(index) => {
-                                        setCurrentIndex(index);
-                                        Haptics.selectionAsync();
-                                    }}
-                                    renderItem={({ item, index }) => {
-                                        if (!item) return <View />;
-                                        return (
-                                            <GlassCard style={styles.card} glassEffectStyle="regular">
-                                                <View style={styles.cardHeader}>
-                                                    <Text style={styles.label}>EXERCISE NAME</Text>
-                                                    <TextInput
-                                                        style={styles.nameInput}
-                                                        value={item.name}
-                                                        onChangeText={(t) => handleUpdateExercise(item.id, 'name', t)}
-                                                        placeholder="Exercise Name"
-                                                        placeholderTextColor="rgba(255,255,255,0.3)"
-                                                        multiline
-                                                        numberOfLines={2}
-                                                        returnKeyType="done"
-                                                        blurOnSubmit={true}
-                                                        onFocus={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)}
-                                                    />
-                                                </View>
-
-                                                <View style={styles.slidersWrapper}>
-                                                    <HapticSlider
-                                                        label="SETS"
-                                                        unit=""
-                                                        value={item.sets}
-                                                        min={1}
-                                                        max={10}
-                                                        onValueChange={(v) => handleUpdateExercise(item.id, 'sets', v)}
-                                                        style={{ marginVertical: 8 }}
-                                                    />
-                                                    <HapticSlider
-                                                        label="REPS"
-                                                        unit=""
-                                                        value={parseInt(item.reps) || 10}
-                                                        min={1}
-                                                        max={50}
-                                                        onValueChange={(v) => handleUpdateExercise(item.id, 'reps', v.toString())}
-                                                        style={{ marginVertical: 8 }}
-                                                    />
-                                                    <HapticSlider
-                                                        label="REST"
-                                                        unit="s"
-                                                        value={item.restSec}
-                                                        min={5}
-                                                        max={300}
-                                                        step={5}
-                                                        onValueChange={(v) => handleUpdateExercise(item.id, 'restSec', v)}
-                                                        style={{ marginVertical: 8 }}
-                                                    />
-                                                </View>
-
-                                                <Text style={styles.counter}>{index + 1} / {exercises.length}</Text>
-                                            </GlassCard>
-                                        );
-                                    }}
-                                    mode="parallax"
-                                    modeConfig={{
-                                        parallaxScrollingScale: 0.9,
-                                        parallaxScrollingOffset: 25,
-                                    }}
-                                />
-                            )}
-                        </View>
-                    </KeyboardAvoidingView>
-
-                    {/* Footer */}
-                    <View style={[styles.footer, { paddingBottom: insets.bottom + 10 }]}>
-                        <Pressable style={[styles.actionBtn, styles.deleteBtn]} onPress={handleDeleteCurrent}>
-                            <FontAwesome name="trash" size={20} color="#fff" />
-                            <Text style={styles.btnText}>DELETE</Text>
-                        </Pressable>
-                        <Pressable style={[styles.actionBtn, styles.saveBtn]} onPress={handleSave}>
-                            <FontAwesome name="check" size={20} color="#fff" />
-                            <Text style={styles.btnText}>SAVE</Text>
-                        </Pressable>
-                    </View>
+            <KeyboardAwareScrollView
+                bottomOffset={20}
+                contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+                keyboardShouldPersistTaps="handled"
+            >
+                {/* Header */}
+                <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+                    <Pressable onPress={handleBack} style={styles.backBtn}>
+                        <FontAwesome name="arrow-left" size={24} color="#fff" />
+                    </Pressable>
+                    <TextInput
+                        style={styles.headerTitle}
+                        value={dayNameInput}
+                        onChangeText={setDayNameInput}
+                        placeholder={t.day_name_placeholder}
+                        placeholderTextColor="rgba(255,255,255,0.3)"
+                        selectionColor="#fff"
+                    />
+                    <Pressable onPress={handleAddExercise} style={styles.addBtnHeader}>
+                        <FontAwesome name="plus" size={20} color="#fff" />
+                    </Pressable>
                 </View>
-            </TouchableWithoutFeedback>
+
+                {/* Carousel */}
+                <View style={styles.carouselContainer}>
+                    {exercises.length === 0 ? (
+                        <View style={styles.emptyContainer}>
+                            <Text style={styles.emptyText}>{t.no_exercises}</Text>
+                            <Pressable onPress={handleAddExercise} style={styles.addFirstBtn}>
+                                <Text style={styles.addFirstText}>{t.add_exercise}</Text>
+                            </Pressable>
+                        </View>
+                    ) : (
+                        <Carousel
+                            ref={carouselRef}
+                            loop={false}
+                            width={PAGE_WIDTH}
+                            height={PAGE_WIDTH * 1.1}
+                            data={exercises}
+                            scrollAnimationDuration={500}
+                            onSnapToItem={(index) => {
+                                setCurrentIndex(index);
+                                Haptics.selectionAsync();
+                            }}
+                            renderItem={({ item, index }) => {
+                                if (!item) return <View />;
+                                return (
+                                    <GlassCard style={styles.card} glassEffectStyle="regular">
+                                        <View style={styles.cardHeader}>
+                                            <Text style={styles.label}>{t.exercise_name}</Text>
+                                            <TextInput
+                                                style={styles.nameInput}
+                                                value={item.name}
+                                                onChangeText={(t) => handleUpdateExercise(item.id, 'name', t)}
+                                                placeholder={t.exercise_name}
+                                                placeholderTextColor="rgba(255,255,255,0.3)"
+                                                multiline
+                                                numberOfLines={2}
+                                                returnKeyType="done"
+                                                blurOnSubmit={true}
+                                                onFocus={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)}
+                                            />
+                                        </View>
+
+                                        <View style={styles.slidersWrapper}>
+                                            <HapticSlider
+                                                label={t.sets}
+                                                unit=""
+                                                value={item.sets}
+                                                min={1}
+                                                max={10}
+                                                onValueChange={(v) => handleUpdateExercise(item.id, 'sets', v)}
+                                                style={{ marginVertical: 8 }}
+                                            />
+                                            <HapticSlider
+                                                label={t.reps}
+                                                unit=""
+                                                value={parseInt(item.reps) || 10}
+                                                min={1}
+                                                max={50}
+                                                onValueChange={(v) => handleUpdateExercise(item.id, 'reps', v.toString())}
+                                                style={{ marginVertical: 8 }}
+                                            />
+                                            <HapticSlider
+                                                label={t.rest}
+                                                unit="s"
+                                                value={item.restSec}
+                                                min={5}
+                                                max={300}
+                                                step={5}
+                                                onValueChange={(v) => handleUpdateExercise(item.id, 'restSec', v)}
+                                                style={{ marginVertical: 8 }}
+                                            />
+                                        </View>
+
+                                        <Text style={styles.counter}>{index + 1} / {exercises.length}</Text>
+                                    </GlassCard>
+                                );
+                            }}
+                            mode="parallax"
+                            modeConfig={{
+                                parallaxScrollingScale: 0.9,
+                                parallaxScrollingOffset: 25,
+                            }}
+                        />
+                    )}
+                </View>
+            </KeyboardAwareScrollView>
+
+            {/* Footer */}
+            <View style={[styles.footer, { paddingBottom: insets.bottom + 10 }]}>
+                <Pressable style={[styles.actionBtn, styles.deleteBtn]} onPress={handleDeleteCurrent}>
+                    <FontAwesome name="trash" size={20} color="#fff" />
+                    <Text style={styles.btnText}>{t.delete}</Text>
+                </Pressable>
+                <Pressable style={[styles.actionBtn, styles.saveBtn]} onPress={handleSave}>
+                    <FontAwesome name="check" size={20} color="#fff" />
+                    <Text style={styles.btnText}>{t.save}</Text>
+                </Pressable>
+            </View>
+
+            <KeyboardToolbar />
         </View>
     );
+
 }
 
 const styles = StyleSheet.create({
